@@ -1,6 +1,8 @@
 # usage
 ```
-fittingPointCloud --i1 data/111.txt --i2 data/222.txt -s 5 -o results/asd.txt
+git clone https://github.com/8zf/gd.git fittingPointCloud
+cd fittingPointCloud
+npm install
+node index.js --input1 test/test13.txt --input2 test/test23.txt --output results/result3.txt --step 20
 ```
 
-still in progress :)
