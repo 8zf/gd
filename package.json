@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --inspect-brk index.js --i1 test/test13.txt --i2 test/test23.txt -o results/result3.txt"
   },
   "author": "",
   "license": "ISC",

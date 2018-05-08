@@ -1,3 +1,9 @@
+# self-defined
+data/
+results/
+*.swp
+.DS_Store
+
 # Logs
 logs
 *.log
