@@ -1,5 +1,6 @@
 const Rectangle = require('./rectangle')
 const Point = require('./point')
+const fs = require('fs')
 module.exports = {
   overlapRectangles(r1, r2) {
     let left = Math.max(r1.left, r2.left),
@@ -16,6 +17,10 @@ module.exports = {
     // two arrays of Point in a step tempOverlap, project them on YZ surface (just using Y Z coordinate)
     // find overlapped y1 -> y2 and corresponding z1 & z2
     // go through two parts and correct them using weighted average
+    if (part1.length === 0 || part2.length === 0) {
+      console.log('no point in part')
+      return
+    }
     let miny1 = part1[0].y,
       maxy1 = part1[0].y,
       miny2 = part2[0].y,
@@ -77,5 +82,12 @@ module.exports = {
     part1.forEach(correctPoint)
     part2.forEach(correctPoint)
     return [part1, part2]
-  }
+  },
+  //writeToFile(pointcloud, path) {
+  //pointcloud.points.forEach(point => {
+  //// 写进文件
+  //let line = point.x + ' ' + point.y + ' ' + point.z
+  //fs.writeFileSync(pointcloud.srcFile, line)
+  //})
+  //}
 }
