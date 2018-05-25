@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const Point = require('./point')
 const Rectangle = require('./rectangle')
+const {Matrix} = require('ml-matrix')
 module.exports = class PointCloud {
   constructor(file, points) {
     if (file) {
@@ -93,6 +94,51 @@ module.exports = class PointCloud {
     })
   }
 
+  flipSelf() {
+    for (let i in this.points) {
+      //沿X轴180度翻转，y = -y, z = -z
+      this.points[i].y = -this.points[i].y
+      this.points[i].z = -this.points[i].z
+    }
+  }
+
+  getCenterPoint() {
+    let x = (this.boundingBox.minx + this.boundingBox.maxx) / 2,
+      y = (this.boundingBox.miny + this.boundingBox.maxy) / 2,
+      z = (this.boundingBox.minz + this.boundingBox.maxz) / 2
+    this.centerPoint = new Point(x, y, z)
+    return this.centerPoint
+  }
+  resetCenterToZero() {
+    // 计算出中心点并以此为根据平移到原点
+    if (!this.centerPoint)
+      this.getCenterPoint()
+    for (let i in this.points) {
+      this.points[i].x = this.points[i].x - this.centerPoint.x
+      this.points[i].y = this.points[i].y - this.centerPoint.y
+      this.points[i].z = this.points[i].z - this.centerPoint.z
+    }
+  }
+  rotate(xAngle, yAngle, zAngle) {
+    // xyz angle采用角度制，0~360度,计算的时候使用弧度
+    let pi = 2 * Math.asin(1)
+
+    xAngle = (xAngle * pi) / 180
+    yAngle = (yAngle * pi) / 180
+    zAngle = (zAngle * pi) / 180
+
+    let xMatrix = new Matrix([[1, 0, 0],[0, Math.cos(xAngle), Math.sin(xAngle)],[0, -Math.sin(xAngle), Math.cos(xAngle)]]),
+      yMatrix = new Matrix([[Math.cos(yAngle), 0, -Math.sin(yAngle)],[0, 1, 0],[Math.sin(yAngle), 0, Math.cos(yAngle)]]),
+      zMatrix = new Matrix([[Math.cos(zAngle), Math.sin(zAngle), 0],[-Math.sin(zAngle), Math.cos(zAngle), 0],[0, 0, 1]])
+
+    for (let i in this.points) {
+      let tmp = new Matrix([[this.points[i].x, this.points[i].y, this.points[i].z]])
+      let res = tmp.mmul(xMatrix).mmul(yMatrix).mmul(zMatrix).to1DArray()
+      this.points[i].x = res[0]
+      this.points[i].y = res[1]
+      this.points[i].z = res[2]
+    }
+  }
   writeToFile(fileName) {
     if ((!this.points) || this.points.length === 0) {
       console.log('no points to write')
