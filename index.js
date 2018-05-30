@@ -29,8 +29,16 @@ if (overlap === '') {
   process.exit(0)
 }
 
-/** 对于overlap，假定沿x方向，按照步长step形成的小矩形tempSquare（overlap.xLength*step）为单位，获得两个点云中 在xy面的投影在tempSquare内的 所有点，点的查找时间（点云中点一般按照x轴坐标顺序排列）对该步骤的效率有较大的影响
- **/
+//let temp1 = new PointCloud(null, pointCloud1.getPointsProjectedOnXY(overlap.left, overlap.right, overlap.bottom, overlap.top))
+//let temp2 = new PointCloud(null, pointCloud2.getPointsProjectedOnXY(overlap.left, overlap.right, overlap.bottom, overlap.top))
+//let asd = './overlap_part1_ver2.txt'
+//let asd2 = './overlap2_part2_ver2.txt'
+//console.log('wirte overlap to file')
+//temp1.writeToFile(asd)
+//temp2.writeToFile(asd2)
+//console.log('write done')
+
+// 对于overlap，假定沿x方向，按照步长step形成的小矩形tempSquare（overlap.xLength*step）为单位，获得两个点云中 在xy面的投影在tempSquare内的 所有点，点的查找时间（点云中点一般按照x轴坐标顺序排列）对该步骤的效率有较大的影响
 let x
 for (let i = 0; x = overlap.left + i * argv.step, x <= overlap.right; i++) {
   /** 合并重叠部分
@@ -50,12 +58,15 @@ for (let i = 0; x = overlap.left + i * argv.step, x <= overlap.right; i++) {
   pointCloud2.removePointsProjectedOnXY(x, x + argv.step, overlap.bottom, overlap.top)
   // 将拟合后的部分写入文件
   newCloud.writeToFile(argv.output)
+  newCloud.writeToFile(argv.output.replace(/.txt/, '') + '_newCloud.txt')
 }
 
 // 将已处理的重叠部分与两个点云为重叠的部分输出为拼合后点云
-console.log('重合部分拟合结果写入' + argv.output)
+console.log('重合部分拟合结果已写入' + argv.output)
 // 将未修正的原点云非重叠部分写入文件
 pointCloud1.writeToFile(argv.output)
+pointCloud1.writeToFile(argv.output.replace(/.txt/, '') + '_oldCloud.txt')
 pointCloud2.writeToFile(argv.output)
-console.log('非重叠部分写入 ' + argv.output)
+pointCloud2.writeToFile(argv.output.replace(/.txt/, '') + '_oldCloud.txt')
+console.log('非重叠部分已写入 ' + argv.output)
 console.log('拟合完毕')
